@@ -3,7 +3,11 @@
     "allow": [
       "Bash(npx tsc *)",
       "Bash(npx eslint *)",
-      "mcp__Claude_Preview__preview_start"
+      "mcp__Claude_Preview__preview_start",
+      "Bash(cd /Users/dvirlevy/Claude/Projects/chat-bot-assignment-be/backend && cat app/models/message.py)",
+      "Bash(cat .env)",
+      "Bash(head -5 requirements.txt)",
+      "Bash(docker info *)"
     ]
   }
 }

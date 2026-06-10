@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { ENV } from "@/lib/constants";
 import { generateId, nowISO } from "@/lib/utils";
 import type {
-  IncomingWebSocketPayload,
   Message,
   OutgoingWebSocketMessage,
   UseChatReturn,
@@ -22,11 +21,21 @@ import { useWebSocket } from "./useWebSocket";
  * To connect to the real FastAPI backend, update VITE_BACKEND_WS_URL
  * in .env — no hook changes required.
  */
-export function useChat(): UseChatReturn {
+export function useChat(username: string | null): UseChatReturn {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
 
-  const { status, sendRaw, lastMessage } = useWebSocket(ENV.WS_URL);
+  // Don't open a connection until the user has identified themselves —
+  // an empty url keeps useWebSocket idle.
+  const { status, sendRaw, lastMessage } = useWebSocket(username ? ENV.WS_URL : "");
+
+  // ── Join on (re)connect ────────────────────────────────────────────────────
+  useEffect(() => {
+    if (status !== "connected" || !username) return;
+
+    const frame: OutgoingWebSocketMessage = { type: "join", username };
+    sendRaw(JSON.stringify(frame));
+  }, [status, username, sendRaw]);
 
   // ── Parse inbound WebSocket frames ────────────────────────────────────────
   useEffect(() => {
@@ -35,15 +44,15 @@ export function useChat(): UseChatReturn {
     try {
       const frame = JSON.parse(lastMessage.data as string) as WebSocketMessage;
 
-      if (frame.type === "message") {
-        const payload = frame.payload as IncomingWebSocketPayload;
-        const incoming: Message = {
-          id: generateId(),
-          text: payload.text,
-          direction: "incoming",
-          timestamp: payload.timestamp ?? nowISO(),
-        };
-        setMessages((prev) => [...prev, incoming]);
+      switch (frame.type) {
+        case "message":
+          setMessages((prev) => [...prev, frame.payload]);
+          break;
+        case "history":
+          setMessages(frame.messages);
+          break;
+        default:
+          break;
       }
     } catch {
       // Non-JSON frames are ignored — backend may send ping/pong strings

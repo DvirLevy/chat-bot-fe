@@ -18,7 +18,7 @@ import { APP_DESCRIPTION } from "@/lib/constants";
 export function ChatPage() {
   const { username, setUsername } = useUsername();
   const { messages, inputValue, status, setInputValue, sendMessage } =
-    useChat();
+    useChat(username);
 
   if (!username) {
     return <UsernameEntryForm onSubmit={setUsername} />;

@@ -90,6 +90,7 @@ export interface UseChatReturn {
   messages: Message[];
   inputValue: string;
   status: ConnectionStatus;
+  isBusy: boolean;
   setInputValue: (value: string) => void;
   sendMessage: () => void;
 }

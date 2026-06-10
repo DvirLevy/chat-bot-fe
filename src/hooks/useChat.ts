@@ -24,6 +24,7 @@ import { useWebSocket } from "./useWebSocket";
 export function useChat(username: string | null): UseChatReturn {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
+  const [isBusy, setIsBusy] = useState(false);
 
   // Don't open a connection until the user has identified themselves —
   // an empty url keeps useWebSocket idle.
@@ -51,6 +52,12 @@ export function useChat(username: string | null): UseChatReturn {
         case "history":
           setMessages(frame.messages);
           break;
+        case "busy":
+          setIsBusy(true);
+          break;
+        case "turn_granted":
+          setIsBusy(false);
+          break;
         default:
           break;
       }
@@ -63,7 +70,7 @@ export function useChat(username: string | null): UseChatReturn {
   // ── Outbound dispatch ─────────────────────────────────────────────────────
   const sendMessage = useCallback(() => {
     const text = inputValue.trim();
-    if (!text) return;
+    if (!text || isBusy) return;
 
     const outgoing: Message = {
       id: generateId(),
@@ -82,7 +89,7 @@ export function useChat(username: string | null): UseChatReturn {
     };
 
     sendRaw(JSON.stringify(frame));
-  }, [inputValue, sendRaw]);
+  }, [inputValue, isBusy, sendRaw]);
 
-  return { messages, inputValue, status, setInputValue, sendMessage };
+  return { messages, inputValue, status, isBusy, setInputValue, sendMessage };
 }

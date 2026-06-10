@@ -22,6 +22,10 @@ export const EMPTY_STATE_DESCRIPTION =
 
 export const SEND_BUTTON_LABEL = "Send";
 export const INPUT_PLACEHOLDER = "Type a message…";
+export const INPUT_PLACEHOLDER_BUSY = "Chat is busy…";
+
+export const BUSY_MESSAGE =
+  "Someone else is currently chatting. Please try again later.";
 
 export const STATUS_LABELS: Record<string, string> = {
   idle: "Idle",

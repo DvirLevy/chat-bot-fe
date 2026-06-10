@@ -17,7 +17,7 @@ import { APP_DESCRIPTION } from "@/lib/constants";
  */
 export function ChatPage() {
   const { username, setUsername } = useUsername();
-  const { messages, inputValue, status, setInputValue, sendMessage } =
+  const { messages, inputValue, status, isBusy, setInputValue, sendMessage } =
     useChat(username);
 
   if (!username) {
@@ -38,6 +38,7 @@ export function ChatPage() {
               messages={messages}
               inputValue={inputValue}
               status={status}
+              isBusy={isBusy}
               onInputChange={setInputValue}
               onSend={sendMessage}
             />

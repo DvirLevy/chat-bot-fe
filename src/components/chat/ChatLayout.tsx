@@ -1,3 +1,4 @@
+import { BusyBanner } from "./BusyBanner";
 import { ChatHeader } from "./ChatHeader";
 import { MessageList } from "./MessageList";
 import { ChatInput } from "./ChatInput";
@@ -7,6 +8,7 @@ interface ChatLayoutProps {
   messages: Message[];
   inputValue: string;
   status: ConnectionStatus;
+  isBusy: boolean;
   onInputChange: (value: string) => void;
   onSend: () => void;
 }
@@ -21,20 +23,23 @@ export function ChatLayout({
   messages,
   inputValue,
   status,
+  isBusy,
   onInputChange,
   onSend,
 }: ChatLayoutProps) {
-  const isInputDisabled = status !== "connected";
+  const isInputDisabled = status !== "connected" || isBusy;
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
       <ChatHeader status={status} />
       <MessageList messages={messages} />
+      {isBusy && <BusyBanner />}
       <ChatInput
         value={inputValue}
         onChange={onInputChange}
         onSend={onSend}
         disabled={isInputDisabled}
+        isBusy={isBusy}
       />
     </div>
   );

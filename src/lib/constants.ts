@@ -30,3 +30,16 @@ export const STATUS_LABELS: Record<string, string> = {
   disconnected: "Disconnected",
   error: "Error",
 } as const;
+
+// ─── Username Entry ───────────────────────────────────────────────────────────
+
+export const USERNAME_STORAGE_KEY = "chat-username";
+export const USERNAME_MAX_LENGTH = 32;
+
+export const USERNAME_ENTRY_TITLE = "Welcome";
+export const USERNAME_ENTRY_DESCRIPTION =
+  "Choose a username to start chatting. We'll remember it on this device.";
+export const USERNAME_INPUT_LABEL = "Username";
+export const USERNAME_INPUT_PLACEHOLDER = "Enter a username…";
+export const USERNAME_SUBMIT_LABEL = "Continue";
+export const USERNAME_REQUIRED_ERROR = "Please enter a username.";

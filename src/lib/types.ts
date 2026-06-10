@@ -49,3 +49,9 @@ export interface UseChatReturn {
   setInputValue: (value: string) => void;
   sendMessage: () => void;
 }
+
+export interface UseUsernameReturn {
+  username: string | null;
+  setUsername: (username: string) => void;
+  clearUsername: () => void;
+}

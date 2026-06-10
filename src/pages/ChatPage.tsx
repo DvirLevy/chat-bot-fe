@@ -1,6 +1,8 @@
 import { ChatLayout } from "@/components/chat/ChatLayout";
 import { SystemDesignPanel } from "@/components/system-design/SystemDesignPanel";
+import { UsernameEntryForm } from "@/components/username/UsernameEntryForm";
 import { useChat } from "@/hooks/useChat";
+import { useUsername } from "@/hooks/useUsername";
 import { APP_DESCRIPTION } from "@/lib/constants";
 
 /**
@@ -9,10 +11,18 @@ import { APP_DESCRIPTION } from "@/lib/constants";
  * Desktop layout: centered card (max-w-4xl) with the system design panel
  *   displayed alongside on wider screens.
  * Tablet / mobile: full-screen chat, system design panel stacked below.
+ *
+ * Until a username is chosen (and persisted to localStorage), shows the
+ * username entry screen instead of the chat.
  */
 export function ChatPage() {
+  const { username, setUsername } = useUsername();
   const { messages, inputValue, status, setInputValue, sendMessage } =
     useChat();
+
+  if (!username) {
+    return <UsernameEntryForm onSubmit={setUsername} />;
+  }
 
   return (
     <main className="flex flex-1 flex-col items-center justify-start p-0 sm:justify-center sm:p-4 md:p-6">
@@ -23,7 +33,7 @@ export function ChatPage() {
         {/* ── Chat card ─────────────────────────────────────────────────── */}
         <div className="flex w-full flex-1 flex-col overflow-hidden rounded-none bg-white shadow-none dark:bg-gray-900 sm:rounded-xl sm:shadow-md lg:max-w-2xl">
           {/* Fixed height on sm+; full-screen on mobile */}
-          <div className="flex h-[100dvh] flex-col sm:h-[600px] md:h-[650px]">
+          <div className="flex h-dvh flex-col sm:h-150 md:h-162.5">
             <ChatLayout
               messages={messages}
               inputValue={inputValue}
@@ -36,7 +46,7 @@ export function ChatPage() {
 
         {/* ── System design panel (sidebar on lg, stacked below on smaller) */}
         <aside
-          className="hidden w-full px-4 pb-4 sm:block sm:px-0 sm:pb-0 lg:w-64 lg:flex-shrink-0"
+          className="hidden w-full px-4 pb-4 sm:block sm:px-0 sm:pb-0 lg:w-64 lg:shrink-0"
           aria-label="System architecture"
         >
           <SystemDesignPanel />

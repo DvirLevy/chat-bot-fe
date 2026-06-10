@@ -1,0 +1,52 @@
+import { ChatLayout } from "@/components/chat/ChatLayout";
+import { SystemDesignPanel } from "@/components/system-design/SystemDesignPanel";
+import { useChat } from "@/hooks/useChat";
+import { APP_DESCRIPTION } from "@/lib/constants";
+
+/**
+ * ChatPage — the main application view.
+ *
+ * Desktop layout: centered card (max-w-4xl) with the system design panel
+ *   displayed alongside on wider screens.
+ * Tablet / mobile: full-screen chat, system design panel stacked below.
+ */
+export function ChatPage() {
+  const { messages, inputValue, status, setInputValue, sendMessage } =
+    useChat();
+
+  return (
+    <main className="flex flex-1 flex-col items-center justify-start p-0 sm:justify-center sm:p-4 md:p-6">
+      {/* Page title — visually hidden on mobile (header carries the title) */}
+      <h1 className="sr-only">{APP_DESCRIPTION}</h1>
+
+      <div className="flex w-full max-w-5xl flex-col gap-4 lg:flex-row lg:items-start">
+        {/* ── Chat card ─────────────────────────────────────────────────── */}
+        <div className="flex w-full flex-1 flex-col overflow-hidden rounded-none bg-white shadow-none dark:bg-gray-900 sm:rounded-xl sm:shadow-md lg:max-w-2xl">
+          {/* Fixed height on sm+; full-screen on mobile */}
+          <div className="flex h-[100dvh] flex-col sm:h-[600px] md:h-[650px]">
+            <ChatLayout
+              messages={messages}
+              inputValue={inputValue}
+              status={status}
+              onInputChange={setInputValue}
+              onSend={sendMessage}
+            />
+          </div>
+        </div>
+
+        {/* ── System design panel (sidebar on lg, stacked below on smaller) */}
+        <aside
+          className="hidden w-full px-4 pb-4 sm:block sm:px-0 sm:pb-0 lg:w-64 lg:flex-shrink-0"
+          aria-label="System architecture"
+        >
+          <SystemDesignPanel />
+        </aside>
+      </div>
+
+      {/* System design panel stacked below on sm/md screens */}
+      <div className="w-full max-w-5xl px-4 pb-4 pt-0 sm:px-0 sm:pb-0 lg:hidden">
+        <SystemDesignPanel />
+      </div>
+    </main>
+  );
+}

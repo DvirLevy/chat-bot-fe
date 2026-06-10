@@ -1,16 +1,19 @@
 import { MessageCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
-import { APP_TITLE, STATUS_LABELS } from "@/lib/constants";
+import { APP_TITLE, END_CHAT_BUTTON_LABEL, STATUS_LABELS } from "@/lib/constants";
 import { getStatusVariant } from "@/lib/utils";
 import type { ConnectionStatus } from "@/lib/types";
 
 interface ChatHeaderProps {
   status: ConnectionStatus;
+  canEndChat: boolean;
+  onEndChat: () => void;
 }
 
-export function ChatHeader({ status }: ChatHeaderProps) {
+export function ChatHeader({ status, canEndChat, onEndChat }: ChatHeaderProps) {
   return (
     <header className="flex-shrink-0">
       <div className="flex items-center justify-between px-4 py-3 sm:px-6">
@@ -30,6 +33,11 @@ export function ChatHeader({ status }: ChatHeaderProps) {
 
         <div className="flex items-center gap-2">
           <ConnectionBadge status={status} />
+          {canEndChat && (
+            <Button onClick={onEndChat} size="sm" variant="outline">
+              {END_CHAT_BUTTON_LABEL}
+            </Button>
+          )}
           <ThemeToggle />
         </div>
       </div>

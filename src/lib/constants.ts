@@ -1,3 +1,5 @@
+import type { ChatEndedReason } from "./types";
+
 // ─── Environment ──────────────────────────────────────────────────────────────
 
 export const ENV = {
@@ -23,9 +25,18 @@ export const EMPTY_STATE_DESCRIPTION =
 export const SEND_BUTTON_LABEL = "Send";
 export const INPUT_PLACEHOLDER = "Type a message…";
 export const INPUT_PLACEHOLDER_BUSY = "Chat is busy…";
+export const INPUT_PLACEHOLDER_ENDED = "Chat ended";
 
 export const BUSY_MESSAGE =
   "Someone else is currently chatting. Please try again later.";
+
+export const END_CHAT_BUTTON_LABEL = "End chat";
+export const START_NEW_CHAT_BUTTON_LABEL = "Start new chat";
+
+export const ENDED_REASON_MESSAGES: Record<ChatEndedReason, string> = {
+  user: "You ended the chat. Start a new one whenever you're ready.",
+  idle: "The chat ended due to inactivity. Start a new one whenever you're ready.",
+};
 
 export const STATUS_LABELS: Record<string, string> = {
   idle: "Idle",

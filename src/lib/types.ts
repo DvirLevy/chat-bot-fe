@@ -76,7 +76,21 @@ export interface JoinEvent {
   username: string;
 }
 
-export type OutgoingWebSocketMessage = SendMessageEvent | JoinEvent;
+export interface EndChatEvent {
+  type: "end_chat";
+}
+
+export type OutgoingWebSocketMessage =
+  | SendMessageEvent
+  | JoinEvent
+  | EndChatEvent;
+
+// ─── Chat Session State ───────────────────────────────────────────────────────
+
+// Why the active turn ended on the client's side — distinguishes a deliberate
+// "End chat" click from a server-driven idle release, so the UI can show a
+// matching message.
+export type ChatEndedReason = "user" | "idle";
 
 // ─── Hook Return Types ────────────────────────────────────────────────────────
 
@@ -91,8 +105,11 @@ export interface UseChatReturn {
   inputValue: string;
   status: ConnectionStatus;
   isBusy: boolean;
+  endedReason: ChatEndedReason | null;
   setInputValue: (value: string) => void;
   sendMessage: () => void;
+  endChat: () => void;
+  startNewChat: () => void;
 }
 
 export interface UseUsernameReturn {

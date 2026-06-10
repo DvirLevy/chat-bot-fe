@@ -17,8 +17,17 @@ import { APP_DESCRIPTION } from "@/lib/constants";
  */
 export function ChatPage() {
   const { username, setUsername } = useUsername();
-  const { messages, inputValue, status, isBusy, setInputValue, sendMessage } =
-    useChat(username);
+  const {
+    messages,
+    inputValue,
+    status,
+    isBusy,
+    endedReason,
+    setInputValue,
+    sendMessage,
+    endChat,
+    startNewChat,
+  } = useChat(username);
 
   if (!username) {
     return <UsernameEntryForm onSubmit={setUsername} />;
@@ -39,8 +48,11 @@ export function ChatPage() {
               inputValue={inputValue}
               status={status}
               isBusy={isBusy}
+              endedReason={endedReason}
               onInputChange={setInputValue}
               onSend={sendMessage}
+              onEndChat={endChat}
+              onStartNewChat={startNewChat}
             />
           </div>
         </div>

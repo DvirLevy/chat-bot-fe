@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ENV } from "@/lib/constants";
 import { generateId, nowISO } from "@/lib/utils";
 import type {
+  ChatEndedReason,
   Message,
   OutgoingWebSocketMessage,
   UseChatReturn,
@@ -25,6 +26,7 @@ export function useChat(username: string | null): UseChatReturn {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isBusy, setIsBusy] = useState(false);
+  const [endedReason, setEndedReason] = useState<ChatEndedReason | null>(null);
 
   // Don't open a connection until the user has identified themselves —
   // an empty url keeps useWebSocket idle.
@@ -33,6 +35,11 @@ export function useChat(username: string | null): UseChatReturn {
   // ── Join on (re)connect ────────────────────────────────────────────────────
   useEffect(() => {
     if (status !== "connected" || !username) return;
+
+    // A fresh connection means a fresh session — clear any stale busy/ended
+    // state from before a disconnect or "End chat".
+    setIsBusy(false);
+    setEndedReason(null);
 
     const frame: OutgoingWebSocketMessage = { type: "join", username };
     sendRaw(JSON.stringify(frame));
@@ -54,9 +61,16 @@ export function useChat(username: string | null): UseChatReturn {
           break;
         case "busy":
           setIsBusy(true);
+          setEndedReason(null);
           break;
         case "turn_granted":
           setIsBusy(false);
+          setEndedReason(null);
+          break;
+        case "idle_timeout":
+          if (frame.username === username) {
+            setEndedReason("idle");
+          }
           break;
         default:
           break;
@@ -65,12 +79,12 @@ export function useChat(username: string | null): UseChatReturn {
       // Non-JSON frames are ignored — backend may send ping/pong strings
       console.warn("[useChat] Received non-JSON frame:", lastMessage.data);
     }
-  }, [lastMessage]);
+  }, [lastMessage, username]);
 
   // ── Outbound dispatch ─────────────────────────────────────────────────────
   const sendMessage = useCallback(() => {
     const text = inputValue.trim();
-    if (!text || isBusy) return;
+    if (!text || isBusy || endedReason) return;
 
     const outgoing: Message = {
       id: generateId(),
@@ -89,7 +103,35 @@ export function useChat(username: string | null): UseChatReturn {
     };
 
     sendRaw(JSON.stringify(frame));
-  }, [inputValue, isBusy, sendRaw]);
+  }, [inputValue, isBusy, endedReason, sendRaw]);
 
-  return { messages, inputValue, status, isBusy, setInputValue, sendMessage };
+  // ── End the active turn ───────────────────────────────────────────────────
+  const endChat = useCallback(() => {
+    if (status !== "connected") return;
+
+    const frame: OutgoingWebSocketMessage = { type: "end_chat" };
+    sendRaw(JSON.stringify(frame));
+    setEndedReason("user");
+  }, [status, sendRaw]);
+
+  // ── Rejoin after the chat ended (user-initiated or idle) ──────────────────
+  const startNewChat = useCallback(() => {
+    if (status !== "connected" || !username) return;
+
+    const frame: OutgoingWebSocketMessage = { type: "join", username };
+    sendRaw(JSON.stringify(frame));
+    setEndedReason(null);
+  }, [status, username, sendRaw]);
+
+  return {
+    messages,
+    inputValue,
+    status,
+    isBusy,
+    endedReason,
+    setInputValue,
+    sendMessage,
+    endChat,
+    startNewChat,
+  };
 }

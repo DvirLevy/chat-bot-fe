@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   INPUT_PLACEHOLDER,
   INPUT_PLACEHOLDER_BUSY,
+  INPUT_PLACEHOLDER_ENDED,
   SEND_BUTTON_LABEL,
 } from "@/lib/constants";
 
@@ -15,14 +16,16 @@ interface ChatInputProps {
   onSend: () => void;
   disabled?: boolean;
   isBusy?: boolean;
+  isEnded?: boolean;
 }
 
 /**
  * ChatInput — controlled text field with send button.
  *
  * Submits on Enter (without Shift) and via the send button.
- * Disabled when the WebSocket connection is not established or
- * another participant is currently active (`isBusy`).
+ * Disabled when the WebSocket connection is not established, another
+ * participant is currently active (`isBusy`), or the chat has ended
+ * (`isEnded`).
  */
 export function ChatInput({
   value,
@@ -30,6 +33,7 @@ export function ChatInput({
   onSend,
   disabled = false,
   isBusy = false,
+  isEnded = false,
 }: ChatInputProps) {
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -40,11 +44,13 @@ export function ChatInput({
 
   const isSendDisabled = disabled || value.trim().length === 0;
 
-  const placeholder = isBusy
-    ? INPUT_PLACEHOLDER_BUSY
-    : disabled
-      ? "Connecting…"
-      : INPUT_PLACEHOLDER;
+  const placeholder = isEnded
+    ? INPUT_PLACEHOLDER_ENDED
+    : isBusy
+      ? INPUT_PLACEHOLDER_BUSY
+      : disabled
+        ? "Connecting…"
+        : INPUT_PLACEHOLDER;
 
   return (
     <div className="flex-shrink-0">

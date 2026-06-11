@@ -1,14 +1,20 @@
+import { BusyBanner } from "./BusyBanner";
+import { ChatEndedBanner } from "./ChatEndedBanner";
 import { ChatHeader } from "./ChatHeader";
 import { MessageList } from "./MessageList";
 import { ChatInput } from "./ChatInput";
-import type { Message, ConnectionStatus } from "@/lib/types";
+import type { ChatEndedReason, Message, ConnectionStatus } from "@/lib/types";
 
 interface ChatLayoutProps {
   messages: Message[];
   inputValue: string;
   status: ConnectionStatus;
+  isBusy: boolean;
+  endedReason: ChatEndedReason | null;
   onInputChange: (value: string) => void;
   onSend: () => void;
+  onEndChat: () => void;
+  onStartNewChat: () => void;
 }
 
 /**
@@ -21,20 +27,32 @@ export function ChatLayout({
   messages,
   inputValue,
   status,
+  isBusy,
+  endedReason,
   onInputChange,
   onSend,
+  onEndChat,
+  onStartNewChat,
 }: ChatLayoutProps) {
-  const isInputDisabled = status !== "connected";
+  const isInputDisabled = status !== "connected" || isBusy || endedReason !== null;
+  const canEndChat = status === "connected" && !isBusy && endedReason === null;
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <ChatHeader status={status} />
+      <ChatHeader status={status} canEndChat={canEndChat} onEndChat={onEndChat} />
       <MessageList messages={messages} />
+      {endedReason ? (
+        <ChatEndedBanner reason={endedReason} onStartNewChat={onStartNewChat} />
+      ) : (
+        isBusy && <BusyBanner />
+      )}
       <ChatInput
         value={inputValue}
         onChange={onInputChange}
         onSend={onSend}
         disabled={isInputDisabled}
+        isBusy={isBusy}
+        isEnded={endedReason !== null}
       />
     </div>
   );

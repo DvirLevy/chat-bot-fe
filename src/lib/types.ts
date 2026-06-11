@@ -7,6 +7,8 @@ export interface Message {
   text: string;
   direction: MessageDirection;
   timestamp: string; // ISO-8601
+  sequence?: number;
+  username?: string;
 }
 
 // ─── WebSocket Types ──────────────────────────────────────────────────────────
@@ -18,21 +20,82 @@ export type ConnectionStatus =
   | "disconnected"
   | "error";
 
-export interface WebSocketMessage {
-  type: "message" | "status" | "error";
-  payload: unknown;
+// Backend → frontend frames. Discriminated by `type`, matches
+// app/models/websocket_events.py on the backend.
+export interface IncomingMessageEvent {
+  type: "message";
+  payload: Message;
 }
 
-export interface IncomingWebSocketPayload {
-  text: string;
-  timestamp?: string;
+export interface HistoryEvent {
+  type: "history";
+  messages: Message[];
 }
 
-// Frontend → backend frame, matches the backend's SendMessageEvent.
-export interface OutgoingWebSocketMessage {
+export interface StatusEvent {
+  type: "status";
+  connected: boolean;
+  active_participant: boolean;
+}
+
+export interface ErrorEvent {
+  type: "error";
+  message: string;
+}
+
+export interface BusyEvent {
+  type: "busy";
+}
+
+export interface TurnGrantedEvent {
+  type: "turn_granted";
+}
+
+export interface IdleTimeoutEvent {
+  type: "idle_timeout";
+  username: string;
+}
+
+export interface SessionReplacedEvent {
+  type: "session_replaced";
+}
+
+export type WebSocketMessage =
+  | IncomingMessageEvent
+  | HistoryEvent
+  | StatusEvent
+  | ErrorEvent
+  | BusyEvent
+  | TurnGrantedEvent
+  | IdleTimeoutEvent
+  | SessionReplacedEvent;
+
+// Frontend → backend frames, matches the backend's inbound event models.
+export interface SendMessageEvent {
   type: "send_message";
   text: string;
 }
+
+export interface JoinEvent {
+  type: "join";
+  username: string;
+}
+
+export interface EndChatEvent {
+  type: "end_chat";
+}
+
+export type OutgoingWebSocketMessage =
+  | SendMessageEvent
+  | JoinEvent
+  | EndChatEvent;
+
+// ─── Chat Session State ───────────────────────────────────────────────────────
+
+// Why the active turn ended on the client's side — distinguishes a deliberate
+// "End chat" click from a server-driven idle release, so the UI can show a
+// matching message.
+export type ChatEndedReason = "user" | "idle" | "replaced";
 
 // ─── Hook Return Types ────────────────────────────────────────────────────────
 
@@ -46,6 +109,16 @@ export interface UseChatReturn {
   messages: Message[];
   inputValue: string;
   status: ConnectionStatus;
+  isBusy: boolean;
+  endedReason: ChatEndedReason | null;
   setInputValue: (value: string) => void;
   sendMessage: () => void;
+  endChat: () => void;
+  startNewChat: () => void;
+}
+
+export interface UseUsernameReturn {
+  username: string | null;
+  setUsername: (username: string) => void;
+  clearUsername: () => void;
 }

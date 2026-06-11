@@ -16,6 +16,9 @@ export const APP_TITLE = "Telegram Bridge Chat";
 export const APP_DESCRIPTION =
   "Real-time bridge between your browser and Telegram";
 
+export const DATE_LABEL_TODAY = "Today";
+export const DATE_LABEL_YESTERDAY = "Yesterday";
+
 export const EMPTY_STATE_TITLE = "No messages yet";
 export const EMPTY_STATE_DESCRIPTION =
   "Start the conversation — your message will be forwarded to Telegram.";

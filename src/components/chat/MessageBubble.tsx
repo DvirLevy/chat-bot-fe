@@ -6,13 +6,6 @@ interface MessageBubbleProps {
   message: Message;
 }
 
-/**
- * MessageBubble — renders a single chat message.
- *
- * Incoming messages are left-aligned with a light background.
- * Outgoing messages are right-aligned with the primary blue colour.
- * Long text wraps naturally; the bubble expands up to 75% of the container width.
- */
 export function MessageBubble({ message }: MessageBubbleProps) {
   const isOutgoing = message.direction === "outgoing";
 
@@ -30,7 +23,6 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           isOutgoing ? "items-end" : "items-start"
         )}
       >
-        {/* Direction label — screen-reader only */}
         <span className="sr-only">
           {isOutgoing ? "You" : "Telegram user"}:
         </span>

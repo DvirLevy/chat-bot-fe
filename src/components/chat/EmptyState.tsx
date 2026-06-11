@@ -1,9 +1,6 @@
 import { MessageCircleDashed } from "lucide-react";
 import { EMPTY_STATE_DESCRIPTION, EMPTY_STATE_TITLE } from "@/lib/constants";
 
-/**
- * EmptyState — shown when no messages have been sent in the session.
- */
 export function EmptyState() {
   return (
     <div

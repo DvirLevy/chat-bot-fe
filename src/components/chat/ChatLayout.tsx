@@ -17,12 +17,6 @@ interface ChatLayoutProps {
   onStartNewChat: () => void;
 }
 
-/**
- * ChatLayout — structural shell of the chat interface.
- *
- * Composes header, scrollable message list, and sticky input row.
- * Uses flex-column layout so MessageList naturally fills available height.
- */
 export function ChatLayout({
   messages,
   inputValue,

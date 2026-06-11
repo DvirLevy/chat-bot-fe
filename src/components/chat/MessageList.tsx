@@ -1,7 +1,9 @@
-import { useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageBubble } from "./MessageBubble";
+import { DateSeparator } from "./DateSeparator";
 import { EmptyState } from "./EmptyState";
+import { isSameDay } from "@/lib/utils";
 import type { Message } from "@/lib/types";
 
 interface MessageListProps {
@@ -31,9 +33,20 @@ export function MessageList({ messages }: MessageListProps) {
         {messages.length === 0 ? (
           <EmptyState />
         ) : (
-          messages.map((msg) => (
-            <MessageBubble key={msg.id} message={msg} />
-          ))
+          messages.map((msg, index) => {
+            const previous = messages[index - 1];
+            const showDateSeparator =
+              !previous || !isSameDay(msg.timestamp, previous.timestamp);
+
+            return (
+              <Fragment key={msg.id}>
+                {showDateSeparator && (
+                  <DateSeparator timestamp={msg.timestamp} />
+                )}
+                <MessageBubble message={msg} />
+              </Fragment>
+            );
+          })
         )}
       </div>
     </ScrollArea>

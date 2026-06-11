@@ -42,7 +42,6 @@ export function useWebSocket(url: string): UseWebSocketReturn {
 
       ws.onmessage = (event: MessageEvent) => {
         if (!isMountedRef.current) return;
-        console.log("[WS received]", event.data);
         setLastMessage(event);
       };
 
@@ -83,7 +82,6 @@ export function useWebSocket(url: string): UseWebSocketReturn {
 
   const sendRaw = useCallback((data: string) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
-      console.log("[WS sent]", data);
       socketRef.current.send(data);
     } else {
       console.warn("[useWebSocket] Cannot send — socket not open.");

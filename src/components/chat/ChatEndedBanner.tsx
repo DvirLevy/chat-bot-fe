@@ -11,13 +11,6 @@ interface ChatEndedBannerProps {
   onStartNewChat: () => void;
 }
 
-/**
- * ChatEndedBanner — shown once the active turn has ended, whether by the
- * user clicking "End chat" or via a server-side idle timeout.
- *
- * Offers a "Start new chat" action that re-sends `join` to attempt to
- * become the active participant again.
- */
 export function ChatEndedBanner({ reason, onStartNewChat }: ChatEndedBannerProps) {
   return (
     <div

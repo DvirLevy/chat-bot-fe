@@ -28,14 +28,7 @@ npm install
 ### 2. Configure environment
 
 ```bash
-cp .env.example .env
-```
-
-Edit `.env`:
-
-```env
-VITE_BACKEND_WS_URL=ws://localhost:8000/ws
-VITE_BACKEND_HTTP_URL=http://localhost:8000
+add .env file sent to your email
 ```
 
 ### 3. Run development server
@@ -52,6 +45,32 @@ Open [http://localhost:5173](http://localhost:5173).
 npm run build
 npm run preview
 ```
+
+---
+
+## Run with Docker
+
+Builds the app and serves it via nginx on port 5173. The `VITE_*` vars are baked in at build time.
+
+```bash
+# using the values from .env
+VITE_BACKEND_WS_URL=$(grep VITE_BACKEND_WS_URL .env | cut -d= -f2) \
+VITE_BACKEND_HTTP_URL=$(grep VITE_BACKEND_HTTP_URL .env | cut -d= -f2) \
+docker compose up --build
+```
+
+Or build/run directly:
+
+```bash
+docker build \
+  --build-arg VITE_BACKEND_WS_URL=ws://localhost:8000/ws \
+  --build-arg VITE_BACKEND_HTTP_URL=http://localhost:8000 \
+  -t chat-bot-fe .
+
+docker run -p 5173:80 chat-bot-fe
+```
+
+Open [http://localhost:5173](http://localhost:5173).
 
 ---
 

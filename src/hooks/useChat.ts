@@ -10,39 +10,19 @@ import type {
 } from "@/lib/types";
 import { useWebSocket } from "./useWebSocket";
 
-/**
- * useChat — high-level chat state manager.
- *
- * Composes useWebSocket and owns:
- *  - messages list (session-scoped, no persistence by design)
- *  - controlled input value
- *  - outbound message dispatch
- *  - inbound message parsing
- *
- * To connect to the real FastAPI backend, update VITE_BACKEND_WS_URL
- * in .env — no hook changes required.
- */
 export function useChat(username: string | null): UseChatReturn {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isBusy, setIsBusy] = useState(false);
   const [endedReason, setEndedReason] = useState<ChatEndedReason | null>(null);
 
-  // Set when the backend reports this connection was replaced by another
-  // tab/window for the same username. Blocks the auto-(re)join effect below
-  // so the two tabs don't keep kicking each other off on every reconnect.
   const [isReplaced, setIsReplaced] = useState(false);
 
-  // Don't open a connection until the user has identified themselves —
-  // an empty url keeps useWebSocket idle.
   const { status, sendRaw, lastMessage } = useWebSocket(username ? ENV.WS_URL : "");
 
-  // ── Join on (re)connect ────────────────────────────────────────────────────
   useEffect(() => {
     if (status !== "connected" || !username || isReplaced) return;
 
-    // A fresh connection means a fresh session — clear any stale busy/ended
-    // state from before a disconnect or "End chat".
     setIsBusy(false);
     setEndedReason(null);
 
@@ -50,7 +30,6 @@ export function useChat(username: string | null): UseChatReturn {
     sendRaw(JSON.stringify(frame));
   }, [status, username, isReplaced, sendRaw]);
 
-  // ── Parse inbound WebSocket frames ────────────────────────────────────────
   useEffect(() => {
     if (!lastMessage) return;
 
@@ -85,12 +64,10 @@ export function useChat(username: string | null): UseChatReturn {
           break;
       }
     } catch {
-      // Non-JSON frames are ignored — backend may send ping/pong strings
       console.warn("[useChat] Received non-JSON frame:", lastMessage.data);
     }
   }, [lastMessage, username]);
 
-  // ── Outbound dispatch ─────────────────────────────────────────────────────
   const sendMessage = useCallback(() => {
     const text = inputValue.trim();
     if (!text || isBusy || endedReason) return;
@@ -105,7 +82,6 @@ export function useChat(username: string | null): UseChatReturn {
     setMessages((prev) => [...prev, outgoing]);
     setInputValue("");
 
-    // Serialize as a typed WebSocket frame so the backend can route it
     const frame: OutgoingWebSocketMessage = {
       type: "send_message",
       text,
@@ -114,7 +90,6 @@ export function useChat(username: string | null): UseChatReturn {
     sendRaw(JSON.stringify(frame));
   }, [inputValue, isBusy, endedReason, sendRaw]);
 
-  // ── End the active turn ───────────────────────────────────────────────────
   const endChat = useCallback(() => {
     if (status !== "connected") return;
 
@@ -123,7 +98,6 @@ export function useChat(username: string | null): UseChatReturn {
     setEndedReason("user");
   }, [status, sendRaw]);
 
-  // ── Rejoin after the chat ended (user-initiated, idle, or replaced) ───────
   const startNewChat = useCallback(() => {
     if (status !== "connected" || !username) return;
 

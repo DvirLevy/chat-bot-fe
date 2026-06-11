@@ -22,12 +22,6 @@ interface UsernameEntryFormProps {
   onSubmit: (username: string) => void;
 }
 
-/**
- * UsernameEntryForm — shown before the chat until a username is chosen.
- *
- * Not a login: no password, just an identifier persisted to localStorage
- * by the caller so the user reconnects automatically next time.
- */
 export function UsernameEntryForm({ onSubmit }: UsernameEntryFormProps) {
   const [value, setValue] = useState("");
   const [error, setError] = useState<string | null>(null);

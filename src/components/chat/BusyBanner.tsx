@@ -1,12 +1,6 @@
 import { AlertCircle } from "lucide-react";
 import { BUSY_MESSAGE } from "@/lib/constants";
 
-/**
- * BusyBanner — shown when another participant is currently active.
- *
- * Sits above the input row and is announced to assistive tech via
- * `role="status"` so screen reader users learn why sending is blocked.
- */
 export function BusyBanner() {
   return (
     <div

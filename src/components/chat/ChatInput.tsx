@@ -19,14 +19,6 @@ interface ChatInputProps {
   isEnded?: boolean;
 }
 
-/**
- * ChatInput — controlled text field with send button.
- *
- * Submits on Enter (without Shift) and via the send button.
- * Disabled when the WebSocket connection is not established, another
- * participant is currently active (`isBusy`), or the chat has ended
- * (`isEnded`).
- */
 export function ChatInput({
   value,
   onChange,

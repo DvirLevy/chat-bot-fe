@@ -12,12 +12,9 @@ export type Theme = "light" | "dark" | "system";
 const STORAGE_KEY = "theme";
 
 interface ThemeContextValue {
-  /** The user's selected preference. */
   theme: Theme;
-  /** The theme actually applied to the document ("light" or "dark"). */
   resolvedTheme: "light" | "dark";
   setTheme: (theme: Theme) => void;
-  /** Cycle between light and dark (resolving "system" first). */
   toggleTheme: () => void;
 }
 
@@ -44,7 +41,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     getSystemTheme
   );
 
-  // Keep the resolved theme in sync with the OS preference while "system".
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     const onChange = () => setSystemTheme(media.matches ? "dark" : "light");
@@ -54,7 +50,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const resolvedTheme = theme === "system" ? systemTheme : theme;
 
-  // Apply the resolved theme to the <html> element.
   useEffect(() => {
     const root = document.documentElement;
     root.classList.toggle("dark", resolvedTheme === "dark");

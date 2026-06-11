@@ -8,12 +8,6 @@ interface MessageListProps {
   messages: Message[];
 }
 
-/**
- * MessageList — scrollable message feed.
- *
- * Auto-scrolls to the latest message whenever the messages array changes.
- * Uses a sentinel div approach for maximum browser compatibility.
- */
 export function MessageList({ messages }: MessageListProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 

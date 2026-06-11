@@ -48,13 +48,10 @@ export function ChatHeader({ status, canEndChat, onEndChat }: ChatHeaderProps) {
   );
 }
 
-// ── Sub-component ─────────────────────────────────────────────────────────────
-
 function ConnectionBadge({ status }: { status: ConnectionStatus }) {
   const variant = getStatusVariant(status);
   const label = STATUS_LABELS[status] ?? status;
 
-  // Map our extended variants to Badge's accepted variants
   const badgeVariant =
     status === "connected"
       ? ("success" as const)

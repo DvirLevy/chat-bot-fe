@@ -15,16 +15,20 @@ interface MessageListProps {
  * Uses a sentinel div approach for maximum browser compatibility.
  */
 export function MessageList({ messages }: MessageListProps) {
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    const viewport = containerRef.current?.closest<HTMLElement>(
+      "[data-radix-scroll-area-viewport]"
+    );
+    viewport?.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
   return (
     <ScrollArea className="flex-1 overflow-hidden">
       <div
-        className="flex flex-col gap-3 px-4 py-4 sm:px-6"
+        ref={containerRef}
+        className="flex min-h-full flex-col justify-end gap-3 px-4 py-4 sm:px-6"
         role="list"
         aria-label="Chat messages"
         aria-live="polite"
@@ -37,8 +41,6 @@ export function MessageList({ messages }: MessageListProps) {
             <MessageBubble key={msg.id} message={msg} />
           ))
         )}
-        {/* Scroll sentinel */}
-        <div ref={bottomRef} aria-hidden="true" />
       </div>
     </ScrollArea>
   );

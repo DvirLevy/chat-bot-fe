@@ -1,5 +1,4 @@
 import { ChatLayout } from "@/components/chat/ChatLayout";
-import { SystemDesignPanel } from "@/components/system-design/SystemDesignPanel";
 import { UsernameEntryForm } from "@/components/username/UsernameEntryForm";
 import { useChat } from "@/hooks/useChat";
 import { useUsername } from "@/hooks/useUsername";
@@ -56,20 +55,8 @@ export function ChatPage() {
             />
           </div>
         </div>
+        </div>
 
-        {/* ── System design panel (sidebar on lg, stacked below on smaller) */}
-        <aside
-          className="hidden w-full px-4 pb-4 sm:block sm:px-0 sm:pb-0 lg:w-64 lg:shrink-0"
-          aria-label="System architecture"
-        >
-          <SystemDesignPanel />
-        </aside>
-      </div>
-
-      {/* System design panel stacked below on sm/md screens */}
-      <div className="w-full max-w-5xl px-4 pb-4 pt-0 sm:px-0 sm:pb-0 lg:hidden">
-        <SystemDesignPanel />
-      </div>
     </main>
   );
 }

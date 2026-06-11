@@ -6,6 +6,7 @@ import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { APP_TITLE, END_CHAT_BUTTON_LABEL, STATUS_LABELS } from "@/lib/constants";
 import { getStatusVariant } from "@/lib/utils";
 import type { ConnectionStatus } from "@/lib/types";
+import { useUsername } from "@/hooks/useUsername";
 
 interface ChatHeaderProps {
   status: ConnectionStatus;
@@ -14,8 +15,9 @@ interface ChatHeaderProps {
 }
 
 export function ChatHeader({ status, canEndChat, onEndChat }: ChatHeaderProps) {
+  const {username } = useUsername()
   return (
-    <header className="flex-shrink-0">
+    <header className="shrink-0">
       <div className="flex items-center justify-between px-4 py-3 sm:px-6">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-white shadow-sm">
@@ -26,7 +28,7 @@ export function ChatHeader({ status, canEndChat, onEndChat }: ChatHeaderProps) {
               {APP_TITLE}
             </h1>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              Powered by FastAPI + Telegram
+              {username}
             </p>
           </div>
         </div>

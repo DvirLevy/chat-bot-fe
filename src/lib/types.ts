@@ -56,6 +56,10 @@ export interface IdleTimeoutEvent {
   username: string;
 }
 
+export interface SessionReplacedEvent {
+  type: "session_replaced";
+}
+
 export type WebSocketMessage =
   | IncomingMessageEvent
   | HistoryEvent
@@ -63,7 +67,8 @@ export type WebSocketMessage =
   | ErrorEvent
   | BusyEvent
   | TurnGrantedEvent
-  | IdleTimeoutEvent;
+  | IdleTimeoutEvent
+  | SessionReplacedEvent;
 
 // Frontend → backend frames, matches the backend's inbound event models.
 export interface SendMessageEvent {
@@ -90,7 +95,7 @@ export type OutgoingWebSocketMessage =
 // Why the active turn ended on the client's side — distinguishes a deliberate
 // "End chat" click from a server-driven idle release, so the UI can show a
 // matching message.
-export type ChatEndedReason = "user" | "idle";
+export type ChatEndedReason = "user" | "idle" | "replaced";
 
 // ─── Hook Return Types ────────────────────────────────────────────────────────
 

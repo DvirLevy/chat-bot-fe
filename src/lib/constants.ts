@@ -36,6 +36,8 @@ export const START_NEW_CHAT_BUTTON_LABEL = "Start new chat";
 export const ENDED_REASON_MESSAGES: Record<ChatEndedReason, string> = {
   user: "You ended the chat. Start a new one whenever you're ready.",
   idle: "The chat ended due to inactivity. Start a new one whenever you're ready.",
+  replaced:
+    "This chat was opened in another tab or window. Start a new one here to take it back.",
 };
 
 export const STATUS_LABELS: Record<string, string> = {
@@ -53,7 +55,7 @@ export const USERNAME_MAX_LENGTH = 32;
 
 export const USERNAME_ENTRY_TITLE = "Welcome";
 export const USERNAME_ENTRY_DESCRIPTION =
-  "Choose a username to start chatting. We'll remember it on this device.";
+  "Choose a username to start chatting. We'll remember it for this session.";
 export const USERNAME_INPUT_LABEL = "Username";
 export const USERNAME_INPUT_PLACEHOLDER = "Enter a username…";
 export const USERNAME_SUBMIT_LABEL = "Continue";

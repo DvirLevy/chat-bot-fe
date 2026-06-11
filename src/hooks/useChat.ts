@@ -28,13 +28,18 @@ export function useChat(username: string | null): UseChatReturn {
   const [isBusy, setIsBusy] = useState(false);
   const [endedReason, setEndedReason] = useState<ChatEndedReason | null>(null);
 
+  // Set when the backend reports this connection was replaced by another
+  // tab/window for the same username. Blocks the auto-(re)join effect below
+  // so the two tabs don't keep kicking each other off on every reconnect.
+  const [isReplaced, setIsReplaced] = useState(false);
+
   // Don't open a connection until the user has identified themselves —
   // an empty url keeps useWebSocket idle.
   const { status, sendRaw, lastMessage } = useWebSocket(username ? ENV.WS_URL : "");
 
   // ── Join on (re)connect ────────────────────────────────────────────────────
   useEffect(() => {
-    if (status !== "connected" || !username) return;
+    if (status !== "connected" || !username || isReplaced) return;
 
     // A fresh connection means a fresh session — clear any stale busy/ended
     // state from before a disconnect or "End chat".
@@ -43,7 +48,7 @@ export function useChat(username: string | null): UseChatReturn {
 
     const frame: OutgoingWebSocketMessage = { type: "join", username };
     sendRaw(JSON.stringify(frame));
-  }, [status, username, sendRaw]);
+  }, [status, username, isReplaced, sendRaw]);
 
   // ── Parse inbound WebSocket frames ────────────────────────────────────────
   useEffect(() => {
@@ -71,6 +76,10 @@ export function useChat(username: string | null): UseChatReturn {
           if (frame.username === username) {
             setEndedReason("idle");
           }
+          break;
+        case "session_replaced":
+          setIsReplaced(true);
+          setEndedReason("replaced");
           break;
         default:
           break;
@@ -114,13 +123,14 @@ export function useChat(username: string | null): UseChatReturn {
     setEndedReason("user");
   }, [status, sendRaw]);
 
-  // ── Rejoin after the chat ended (user-initiated or idle) ──────────────────
+  // ── Rejoin after the chat ended (user-initiated, idle, or replaced) ───────
   const startNewChat = useCallback(() => {
     if (status !== "connected" || !username) return;
 
     const frame: OutgoingWebSocketMessage = { type: "join", username };
     sendRaw(JSON.stringify(frame));
     setEndedReason(null);
+    setIsReplaced(false);
   }, [status, username, sendRaw]);
 
   return {

@@ -53,7 +53,7 @@ export function ChatInput({
         : INPUT_PLACEHOLDER;
 
   return (
-    <div className="flex-shrink-0">
+    <div className="shrink-0">
       <Separator />
       <div className="flex items-center gap-2 px-4 py-3 sm:px-6">
         <label htmlFor="chat-input" className="sr-only">
